@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use anyhow::bail;
 
 use anyhow::Result;
@@ -624,7 +625,7 @@ impl AppServer {
         }
 
         if let Some(owg) = ap.outwg.as_ref() {
-            let mut child = Command::new("wg")
+            let mut child = match Command::new("wg")
                 .arg("set")
                 .arg(&owg.dev)
                 .arg("peer")
@@ -633,7 +634,14 @@ impl AppServer {
                 .arg("/dev/stdin")
                 .stdin(Stdio::piped())
                 .args(&owg.extra_params)
-                .spawn()?;
+                .spawn() {
+                Ok(x) => x,
+                Err(e) => if e.kind() == std::io::ErrorKind::NotFound {
+                    return Err(anyhow!("Could not find wg command"))
+                } else {
+                    return Err(anyhow::Error::new(e))
+                }
+            };
             b64_writer(child.stdin.take().unwrap()).write_all(key.secret())?;
 
             thread::spawn(move || {
