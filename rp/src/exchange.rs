@@ -20,7 +20,9 @@ pub struct ExchangeOptions {
 }
 
 #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
-pub fn exchange(_: ExchangeOptions) -> Result<()> {
+pub async fn exchange(_: ExchangeOptions) -> Result<()> {
+    use anyhow::anyhow;
+
     Err(anyhow!(
         "Your system {} is not yet supported. We are happy to receive patches to address this :)",
         std::env::consts::OS
