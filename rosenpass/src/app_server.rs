@@ -634,12 +634,15 @@ impl AppServer {
                 .arg("/dev/stdin")
                 .stdin(Stdio::piped())
                 .args(&owg.extra_params)
-                .spawn() {
+                .spawn()
+            {
                 Ok(x) => x,
-                Err(e) => if e.kind() == std::io::ErrorKind::NotFound {
-                    return Err(anyhow!("Could not find wg command"))
-                } else {
-                    return Err(anyhow::Error::new(e))
+                Err(e) => {
+                    if e.kind() == std::io::ErrorKind::NotFound {
+                        return Err(anyhow!("Could not find wg command"));
+                    } else {
+                        return Err(anyhow::Error::new(e));
+                    }
                 }
             };
             b64_writer(child.stdin.take().unwrap()).write_all(key.secret())?;

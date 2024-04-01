@@ -162,7 +162,10 @@ pub async fn exchange(options: ExchangeOptions) -> Result<()> {
         Ok(x) => x,
         Err(mut wgsk_maybe) => {
             wgsk_maybe.zeroize();
-            return Err(anyhow!("WireGuard secret key is not {} bytes long.", WG_KEY_LEN));
+            return Err(anyhow!(
+                "WireGuard secret key is not {} bytes long.",
+                WG_KEY_LEN
+            ));
         }
     };
 
@@ -178,7 +181,7 @@ pub async fn exchange(options: ExchangeOptions) -> Result<()> {
     }
 
     match netlink::wg_set(&mut genetlink, link_index, attr).await {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             wgsk.zeroize();
             return Err(e);
