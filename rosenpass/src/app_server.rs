@@ -639,7 +639,7 @@ impl AppServer {
                 Ok(x) => x,
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::NotFound {
-                        return Err(anyhow!("Could not find wg command"));
+                        anyhow::bail!("Could not find wg command");
                     } else {
                         return Err(anyhow::Error::new(e));
                     }
