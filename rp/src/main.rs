@@ -1,12 +1,10 @@
 use std::process::exit;
 
+use crate::exchange::exchange;
+use crate::key::{genkey, pubkey};
 use cli::{Cli, Command};
-use exchange::exchange;
-use key::{genkey, pubkey};
 
 mod cli;
-mod exchange;
-mod key;
 
 #[tokio::main]
 async fn main() {
